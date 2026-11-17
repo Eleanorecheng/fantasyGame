@@ -1,0 +1,45 @@
+EE6161 Assignment 2 - Validation record
+Date: 2026-11-17 (Europe/Dublin)
+
+Environment
+  macOS arm64, AppleClang 21, Qt 6.11.2, Qt-provided CMake/Ninja.
+
+Passed
+  1. CMake Debug build of game_core, FantasyGame, core_tests and gui_tests.
+     Compiler checks: -Wall -Wextra -Wpedantic; no compiler warnings observed.
+  2. Independent qmake application build, using the supplied FantasyGame.pro.
+     No compiler warnings observed.
+  3. CTest core_rules: race baselines, all eight equipment types, category and
+     weight constraints, ring stacking, item removal, health changes, board
+     bounds and reset, command clock, phase changes and terminal state.
+     Seeded gameplay additionally exercised 1,240 combat rounds and 32 kills.
+  4. CTest gui_controls (Qt offscreen): setup selection, New Game, Send,
+     Enter, command buttons, blocked movement, Orc night attributes,
+     inventory, item pickup, Drop item chooser and exit score dialog.
+     The item chooser was encountered and exercised in the recorded run.
+  5. Startup screenshot generated and visually inspected (basic UI).
+  6. Core headers compile independently with -Werror.
+  7. Doxygen public-header documentation generation with warnings as errors.
+  8. clang-format dry run with the supplied K&R-style configuration.
+
+Limits of validation
+  Windows Qt Creator / MSVC / MinGW builds were not run. The source and build
+  files are cross-platform, but the assignment's required Windows build remains
+  an outstanding verification step.
+  Tests used Qt's offscreen platform. Native desktop interaction on macOS was
+  not verified in this run.
+  Offscreen Qt printed font-alias and propagateSizeHints diagnostics; these
+  were runtime platform messages, not C++ compiler warnings.
+  Qt 5 compatibility follows the APIs used; Qt 5 compilation was not run.
+  The teacher-provided Windows .exe was not executed on this Mac.
+
+Reproduce (from project root, with tools on PATH)
+  cmake -S . -B build -DCMAKE_PREFIX_PATH=<installed-Qt-kit-directory>
+  cmake --build build
+  ctest --test-dir build --output-on-failure
+
+  For qmake: use a separate build directory, run qmake <project>/FantasyGame.pro
+  and the make tool matching the chosen Qt kit. Qt Creator manages this for you.
+
+  Optional documentation: doxygen Doxyfile
+  Optional formatting check: clang-format --dry-run --Werror src/*.h src/*.cpp tests/*.cpp

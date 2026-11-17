@@ -1,0 +1,15 @@
+build*/
+.qtcreator/
+*.user
+.DS_Store
+docs-generated/
+
+# qmake outputs when building in the source directory
+Makefile*
+.qmake.stash
+*.o
+*.obj
+*.exe
+*.app/
+release/
+debug/
