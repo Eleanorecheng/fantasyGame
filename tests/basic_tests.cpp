@@ -46,9 +46,11 @@ int main()
     require(human->pick(catalogue()[6], reason), "repeat ring");
     require(human->stats(false).health == 80, "ring health stacking");
     for (int i = 0; i < 150; ++i) {
-        require(human->pick(catalogue()[7], reason), "dynamic ring inventory");
+        require(human->pick(catalogue()[7], reason), "dynamic strength rings");
+        require(human->pick(catalogue()[6], reason), "life ring balances health cost");
+        require(!human->dead(), "growing inventory remains a living character");
     }
-    require(human->inventory().size() == 155, "no fixed inventory count");
+    require(human->inventory().size() == 305, "no fixed inventory count");
     auto load = makeCharacter(Race::Elf);
     require(load->pick(catalogue()[7], reason), "strength ring");
     require(load->pick(catalogue()[2], reason), "plate");
@@ -163,6 +165,7 @@ int main()
                 "drop reverses item effects");
     }
     int fights = 0, kills = 0;
+    bool sawMissWithCounterattack = false;
     // Exercise real command/combat paths across seeds and all player races.
     for (unsigned seed = 0; seed < 30; ++seed) {
         Game run(seed);
@@ -176,7 +179,12 @@ int main()
                 while (run.current().enemy && !run.ended() && rounds++ < 500) {
                     const int oldGold = run.gold();
                     const int reward = run.current().enemy->stats(run.night()).defence;
-                    run.command("a");
+                    std::string combat = run.command("a");
+                    if (combat.find(" misses.") != std::string::npos && run.current().enemy) {
+                        require(combat.find("Enemy:") != std::string::npos,
+                                "surviving enemy counterattacks after every player strike");
+                        sawMissWithCounterattack = true;
+                    }
                     ++fights;
                     if (!run.current().enemy) {
                         ++kills;
@@ -198,5 +206,6 @@ int main()
         }
     }
     require(fights > 50 && kills > 10, "combat coverage");
+    require(sawMissWithCounterattack, "counterattack scenario exercised");
     std::cout << "All core checks passed; " << fights << " combat rounds, " << kills << " kills.\n";
 }

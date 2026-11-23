@@ -5,7 +5,8 @@
 #include "item.h"
 #include <memory>
 /** @brief One dynamically allocated board location, owning its optional contents. */
-struct Square {
+class Square {
+  public:
     std::unique_ptr<Item> item;       ///< Owned item, or null.
     std::unique_ptr<Character> enemy; ///< Owned enemy, or null.
 };

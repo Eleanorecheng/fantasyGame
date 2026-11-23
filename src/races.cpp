@@ -1,22 +1,18 @@
-/** @file races.cpp @brief Races implementation. */
+/** @file races.cpp @brief Race-specific successful-defence rules. */
 #include "races.h"
 #include <stdexcept>
-/** @brief Construct blocker. @param race Human or dwarf race.
- * Pseudocode: CHECK that the selected race is Human or Dwarf; INITIALISE the shared character state.
- */
-BlockingCharacter::BlockingCharacter(Race race) : Character(race)
+
+/** @brief Construct a Human. */
+Human::Human() : Character(Race::Human)
 {
-    if (race != Race::Human && race != Race::Dwarf) {
-        throw std::invalid_argument("Blocking characters must be Human or Dwarf.");
-    }
 }
 
-/** @brief Resolve successful defence for this race.
- * @param adjusted Nonnegative attack minus defence. @param night Night flag.
- * @param random Random source. @return Signed health damage; negative heals.
- * Pseudocode: SELECT the race-specific defence outcome; RETURN signed damage (negative means healing).
+/** @brief Apply the Human successful-defence rule.
+ * @param adjusted Nonnegative adjusted damage. @param night Night flag.
+ * @param random Random source. @return Signed damage; negative values heal.
+ * Pseudocode: APPLY this race's defence rule; RETURN the resulting damage.
  */
-int BlockingCharacter::defendedDamage(int adjusted, bool night, std::mt19937& random) const
+int Human::defendedDamage(int adjusted, bool night, std::mt19937& random) const
 {
     (void)adjusted;
     (void)night;
@@ -24,17 +20,17 @@ int BlockingCharacter::defendedDamage(int adjusted, bool night, std::mt19937& ra
     return 0;
 }
 
-/** @brief Construct elf. */
-ElfCharacter::ElfCharacter() : Character(Race::Elf)
+/** @brief Construct a Elf. */
+Elf::Elf() : Character(Race::Elf)
 {
 }
 
-/** @brief Resolve successful defence for this race.
- * @param adjusted Nonnegative attack minus defence. @param night Night flag.
- * @param random Random source. @return Signed health damage; negative heals.
- * Pseudocode: SELECT the race-specific defence outcome; RETURN signed damage (negative means healing).
+/** @brief Apply the Elf successful-defence rule.
+ * @param adjusted Nonnegative adjusted damage. @param night Night flag.
+ * @param random Random source. @return Signed damage; negative values heal.
+ * Pseudocode: APPLY this race's defence rule; RETURN the resulting damage.
  */
-int ElfCharacter::defendedDamage(int adjusted, bool night, std::mt19937& random) const
+int Elf::defendedDamage(int adjusted, bool night, std::mt19937& random) const
 {
     (void)adjusted;
     (void)night;
@@ -42,54 +38,79 @@ int ElfCharacter::defendedDamage(int adjusted, bool night, std::mt19937& random)
     return -1;
 }
 
-/** @brief Construct hobbit. */
-HobbitCharacter::HobbitCharacter() : Character(Race::Hobbit)
+/** @brief Construct a Dwarf. */
+Dwarf::Dwarf() : Character(Race::Dwarf)
 {
 }
 
-/** @brief Resolve successful defence for this race.
- * @param adjusted Nonnegative attack minus defence. @param night Night flag.
- * @param random Random source. @return Signed health damage; negative heals.
- * Pseudocode: SELECT the race-specific defence outcome; RETURN signed damage (negative means healing).
+/** @brief Apply the Dwarf successful-defence rule.
+ * @param adjusted Nonnegative adjusted damage. @param night Night flag.
+ * @param random Random source. @return Signed damage; negative values heal.
+ * Pseudocode: APPLY this race's defence rule; RETURN the resulting damage.
  */
-int HobbitCharacter::defendedDamage(int adjusted, bool night, std::mt19937& random) const
+int Dwarf::defendedDamage(int adjusted, bool night, std::mt19937& random) const
 {
     (void)adjusted;
     (void)night;
-    return std::uniform_int_distribution<int>(0, 5)(random);
+    (void)random;
+    return 0;
 }
 
-/** @brief Construct orc. */
-OrcCharacter::OrcCharacter() : Character(Race::Orc)
+/** @brief Construct a Hobbit. */
+Hobbit::Hobbit() : Character(Race::Hobbit)
 {
 }
 
-/** @brief Resolve successful defence for this race.
- * @param adjusted Nonnegative attack minus defence. @param night Night flag.
- * @param random Random source. @return Signed health damage; negative heals.
- * Pseudocode: SELECT the race-specific defence outcome; RETURN signed damage (negative means healing).
+/** @brief Apply the Hobbit successful-defence rule.
+ * @param adjusted Nonnegative adjusted damage. @param night Night flag.
+ * @param random Random source. @return Signed damage; negative values heal.
+ * Pseudocode: APPLY this race's defence rule; RETURN the resulting damage.
  */
-int OrcCharacter::defendedDamage(int adjusted, bool night, std::mt19937& random) const
+int Hobbit::defendedDamage(int adjusted, bool night, std::mt19937& random) const
+{
+    (void)adjusted;
+    (void)night;
+    std::uniform_int_distribution<int> damageRoll(0, 5);
+    return damageRoll(random);
+}
+
+/** @brief Construct a Orc. */
+Orc::Orc() : Character(Race::Orc)
+{
+}
+
+/** @brief Apply the Orc successful-defence rule.
+ * @param adjusted Nonnegative adjusted damage. @param night Night flag.
+ * @param random Random source. @return Signed damage; negative values heal.
+ * Pseudocode: APPLY this race's defence rule; RETURN the resulting damage.
+ */
+int Orc::defendedDamage(int adjusted, bool night, std::mt19937& random) const
 {
     (void)random;
-    return night ? -1 : adjusted / 4;
+    if (night) {
+        return -1;
+    }
+    return adjusted / 4;
 }
 
-/** @brief Construct a polymorphic character. @param race Desired race. @return Owned character.
- * Pseudocode: select subclass for race; allocate and return unique ownership; reject invalid race.
+/** @brief Create the requested character.
+ * @param race Selected race. @return Owned character through the common base type.
+ * @throws std::invalid_argument Invalid race.
+ * Pseudocode: SELECT the matching race; CREATE that concrete type; RETURN its pointer.
  */
 std::unique_ptr<Character> makeCharacter(Race race)
 {
     switch (race) {
     case Race::Human:
-    case Race::Dwarf:
-        return std::make_unique<BlockingCharacter>(race);
+        return std::make_unique<Human>();
     case Race::Elf:
-        return std::make_unique<ElfCharacter>();
+        return std::make_unique<Elf>();
+    case Race::Dwarf:
+        return std::make_unique<Dwarf>();
     case Race::Hobbit:
-        return std::make_unique<HobbitCharacter>();
+        return std::make_unique<Hobbit>();
     case Race::Orc:
-        return std::make_unique<OrcCharacter>();
+        return std::make_unique<Orc>();
     }
-    throw std::invalid_argument("Invalid race");
+    throw std::invalid_argument("Invalid race.");
 }

@@ -1,24 +1,16 @@
-/** @file main.cpp @brief Cross-platform Qt Widgets entry point. */
+/** @file main.cpp @brief Start the basic Qt Widgets application. */
 #include "window.h"
 #include <QApplication>
-#include <QPixmap>
-#include <QTimer>
-/** @brief Launch the application.
- * @param argc Argument count. @param argv Argument vector. @return Qt event-loop result.
- * Pseudocode: initialise Qt; show window; optionally schedule smoke-test exit; run events.
+
+/** @brief Program entry point.
+ * @param argc Command-line argument count. @param argv Command-line arguments.
+ * @return Qt application exit code.
+ * Pseudocode: CREATE Qt application; CREATE and SHOW window; PROCESS user events.
  */
 int main(int argc, char* argv[])
 {
-    QApplication app(argc, argv);
+    QApplication application(argc, argv);
     Window window;
     window.show();
-    if (app.arguments().contains("--smoke-test")) {
-        QTimer::singleShot(250, &app, &QApplication::quit);
-    }
-    const int capture = app.arguments().indexOf("--screenshot");
-    if (capture >= 0 && capture + 1 < app.arguments().size()) {
-        const QString path = app.arguments()[capture + 1];
-        QTimer::singleShot(150, &window, [&window, path] { window.grab().save(path); });
-    }
-    return app.exec();
+    return application.exec();
 }

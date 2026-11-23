@@ -11,7 +11,7 @@ class Board {
      * @param width Column count (1-100). @param height Row count (1-100).
      * @param random Random source. @throws std::invalid_argument Invalid dimensions.
      * Pseudocode: validate dimensions; allocate each square; randomly assign content
-     * except at the empty start; transfer completed squares into the board.
+     * except at the empty start; store each square pointer in the board vector.
      */
     void reset(int width, int height, std::mt19937& random);
     /** @brief Access a square. @param x Column. @param y Row. @return Square.

@@ -1,164 +1,123 @@
 EE6161 Advanced Programming - Assignment 2
-Fantasy Game: Class Design Report
+assignment2_final: Class Design Report
 
-1. Design overview
+1. Design aim
 
-The program separates the Qt Widgets interface from the game model. Window
-collects keyboard commands and button actions, asks Game to execute them, and
-shows the returned messages and current state. The model uses standard C++17
-and can be tested without a graphical interface.
+The program uses small, directly named classes and functions to make the
+control flow easy to follow. Standard C++ classes, constructors, inheritance,
+virtual functions, vectors, unique pointers, loops, if/switch statements and
+random-number generation form the game model. Qt Widgets and named slots
+provide the interface. No struct declarations or application lambdas are used.
 
-The implementation follows the module structure described below. The GUI is
-intentionally basic: setup controls, player status, current-location text,
-action buttons, an event log, and a keyboard input field.
+2. Classes and responsibilities
 
-2. Modules and responsibilities
+Window inherits QWidget. It creates the setup controls, action buttons,
+command input, status labels and event log. Named slots such as
+onAttackClicked() call submit("a"). onSendClicked() handles both Send and
+Enter. start() reads the setup controls and starts a new game. refresh()
+displays current model data. Window performs no combat calculation.
 
-main.cpp
-    Creates QApplication and Window, shows the window, and starts Qt's event
-    loop. Optional command-line switches support startup testing and screenshots.
+Game owns the player and Board, and tracks position, gold, command count and
+whether the game has ended. command() reads and dispatches a command, checks
+player defeat and advances time once. Individual actions are deliberately
+separated into movePlayer(), pickUpItem(), dropItem() and attackEnemy().
+strike() handles one character's attack. advanceTime() updates the command
+count and reports phase changes. look() and inventoryText() produce text.
 
-window.h / window.cpp: Window
-    A QWidget subclass responsible for presentation and interaction. It owns a
-    Game value and uses Qt parent ownership for its widgets. start() reads board
-    dimensions and race, submit() processes one user action, and refresh()
-    displays the latest state. Drop opens a QInputDialog to select an item.
-    Defeat and exit display final gold in a QMessageBox. Combat calculations
-    are not performed in the interface.
+Board owns its width, height and vector<unique_ptr<Square>>. reset() creates
+the rectangular board. Each Square is dynamically created with make_unique
+and moved into that vector. at() validates both coordinates before using
+y * width + x to find the square. New-game population starts with an empty
+starting square and exclusive contents in each other square.
 
-game.h / game.cpp: Game
-    Coordinates one game session. It owns Board and the player, tracks position,
-    command count and gold, and processes movement, pickup, drop, attack, look,
-    inventory and exit. strike() resolves a single attack using the attack and
-    defence probabilities and the defender's polymorphic ability. The same
-    Character hierarchy represents both the player and enemies.
+Square is a class with two optional unique pointers, one for Item and one for
+Character. Game rules permit an enemy, an item or neither, and prevent both
+from occupying the square at once. It is intentionally a small data class.
 
-board.h / board.cpp: Board
-    Owns dimensions and vector<unique_ptr<Square>>. reset() creates a rectangular
-    board and randomly assigns an enemy, item or empty state to each non-start
-    square. Temporary storage is used while building a new board so an allocation
-    failure does not partially replace the old board. at() checks x and y
-    separately before converting them to an index, preventing row wrapping.
+Character is the abstract base class. Its private state contains Race,
+accumulated damage and vector<Item> inventory. stats() combines base values,
+night-time Orc changes and equipment effects, then subtracts accumulated
+damage from health. pick() and drop() enforce carrying and category rules.
+weight(), damage(), dead() and read-only accessors provide shared operations.
 
-square.h: Square
-    Represents one location. Each square is individually created using
-    make_unique<Square>(); storing a vector of pointers does not replace this
-    requirement with a vector of inline Square values. A square owns an optional
-    Item and an optional Character through unique_ptr. Initialisation and game
-    commands preserve exclusive content: enemy, item, or empty.
+Human, Elf, Dwarf, Hobbit and Orc each inherit Character. Each overrides the
+pure virtual defendedDamage() method. Human and Dwarf return zero; Elf returns
+minus one to represent healing; Hobbit returns a random value from zero to
+five; Orc returns one quarter of adjusted damage by day and minus one by
+night. The five classes match the five races directly, even where two methods
+are identical. makeCharacter() is an ordinary helper function with a switch
+that constructs the requested concrete class.
 
-character.h / character.cpp: Character
-    Abstract base class for common attributes, health changes, inventory and
-    equipment rules. It stores Race, accumulated damage and vector<Item>.
-    stats() starts with the race table, applies night-time Orc attributes,
-    adds carried-item modifiers, and subtracts accumulated damage from health.
-    Computing attributes from inventory avoids leaving stale modifiers after
-    equipment is dropped. pick() and drop() check the resulting carrying load.
+Item is a class with constructors and public equipment data: name, category,
+weight and attribute modifiers. catalogue() supplies the eight required item
+definitions using Item constructor calls. Stats is a class with a constructor
+and public attribute fields, used to return a calculation result. Race and
+Category are scoped enumerations that avoid unnamed numeric codes.
 
-races.h / races.cpp
-    Contains the concrete defence policies and makeCharacter() factory:
-    - BlockingCharacter represents Human and Dwarf, whose successful-defence
-      damage is identical (zero). Their base attributes remain distinct.
-    - ElfCharacter returns -1 damage, meaning one point of healing.
-    - HobbitCharacter returns a uniformly random integer from zero to five.
-    - OrcCharacter returns one quarter of adjusted damage during the day and
-      -1 damage at night.
-    makeCharacter(Race) returns a unique_ptr<Character> containing the correct
-    concrete type and rejects unsupported race values.
+3. Abstraction and polymorphism
 
-item.h / item.cpp: Item and Category
-    Item is a value type describing name, category, weight and four attribute
-    modifiers. Category distinguishes Weapon, Armour, Shield and Ring.
-    catalogue() supplies the eight required item definitions. Non-ring categories
-    allow one carried item; rings can repeat subject to available strength.
+Character::defendedDamage(...) is pure virtual, so Character cannot be
+instantiated directly. Game::strike() accepts Character references and calls
+the virtual defence method on the defender. The actual Human, Elf, Dwarf,
+Hobbit or Orc override is selected at runtime. Both players and enemies use
+this hierarchy. Character's virtual destructor permits correct destruction
+of derived objects through a unique_ptr<Character>.
 
-race.h / race.cpp: Race
-    A scoped enumeration for Human, Elf, Dwarf, Hobbit and Orc. raceName()
-    converts a valid value into display text and rejects invalid values.
+4. Ownership and dynamic storage
 
-stats.h: Stats
-    A value type containing the effective attack, defence, health, strength,
-    attack probability and defence probability for a character at a given phase.
+Window owns one Game by value. Game owns Board by value and the player through
+a unique_ptr<Character>. Board owns separately allocated Square objects through
+its vector of unique pointers. Each Square owns its optional contents. Resetting
+an enemy pointer removes and destroys the defeated enemy automatically.
 
-3. Inheritance, abstraction and polymorphism
+Character inventory uses vector<Item> by value. It has no fixed count limit;
+rings can repeat as long as final carrying capacity permits. Using value
+objects is sufficient for these small item records. No shared_ptr, manual
+delete, global game state or autonomous enemy AI is needed. Qt parent ownership
+manages the child widgets of Window.
 
-Character declares defendedDamage(...) as a pure virtual method, making it
-abstract. Each concrete race-policy class overrides this method. Game::strike()
-uses Character references and calls defendedDamage() without branching on the
-concrete defender type. Virtual dispatch selects the race-specific result.
-Character also has a virtual destructor so deleting a derived character through
-unique_ptr<Character> safely invokes the complete destruction chain.
+5. Operation flow
 
-Human and Dwarf share one concrete policy because their successful-defence
-behaviour is the same. Distinct base data is selected by Race. This avoids
-copying identical methods while retaining all five required races.
+Startup: main -> Window constructor -> Window::start -> Game::start ->
+Board::reset and makeCharacter -> look and refresh -> Qt event loop.
 
-4. Ownership and dynamic structures
+Attack: button clicked -> onAttackClicked -> submit -> command -> attackEnemy ->
+strike(player, enemy). If the enemy dies, award its phase-adjusted effective
+defence in gold and remove it. Otherwise call strike(enemy, player), even if
+the player's strike missed. command then checks player death, calls advanceTime
+once and returns text to the interface. submit displays the text and refreshes
+status. Failed commands also advance time. Calls after game over do not.
 
-Window owns Game by value. Game owns Board by value and the player through
-unique_ptr<Character>. Board owns each independent Square through a unique_ptr
-stored in a vector. Each Square owns its contents. Removing a defeated enemy
-calls reset() on its pointer; resetting or destroying a board releases its
-owned squares and contents automatically. No manual new/delete pairing or
-shared ownership is required.
+6. Rule decisions and practical limits
 
-Character's vector<Item> inventory grows dynamically. There is no fixed slot
-count or fixed ring count. The only gameplay limits are category and final
-carrying capacity. Items are small value objects, so the inventory does not
-need a pointer per item. Returning const references for inspection avoids
-copying inventories or exposing mutable model state to the GUI.
+The formal race table overrides conflicting examples. Damage is clamped at
+zero before applying successful-defence abilities; Orc quarter damage rounds
+down. Health at or below zero is defeat. Defence healing has no maximum because
+none is specified. Equipment health changes apply immediately; removing a life
+ring or adding a strength ring can cause defeat. Dropping a strength ring is
+refused if it would leave the remaining inventory overweight.
 
-5. Command and combat sequence
+East accepts e; exit accepts x or the complete word exit, resolving the initial
+letter conflict. Empty, failed and unknown commands and cancelled drops count
+as commands. Five daytime commands resolve before the phase changes to night.
 
-One submitted command is resolved using the phase that was active at its start.
-After the action, Game checks player defeat and increments the command count.
-Daytime and night-time alternate every five commands; the next phase applies
-only after the fifth command has finished. Unsuccessful and unknown commands
-still advance time. Commands submitted after game over do not change state.
+Board dimensions are selectable from 1 to 100 each as an allocation guard; this
+is an implementation limit rather than a fixed board size in the assignment.
+Non-start squares independently have 35% enemy, 35% item and 30% empty chances.
+Some enemies carry one item. Enemy equipment disappears on defeat, but it
+contributes to the defence used for gold. Drops onto enemies or items are
+refused. Movement away from enemies is allowed; this also permits escaping
+zero-damage or defence-healing stalemates. Exit or defeat ends the game; no
+automatic victory is added when enemies are exhausted.
 
-For an attack, strike() first rolls attack success. A miss ends that strike.
-A hit rolls defence success. Failed defence receives attack minus defence,
-clamped to a nonnegative value. Successful defence invokes the defender's race
-policy. If the enemy survives the player's strike, it immediately counterattacks,
-even if the player's attack missed. A defeated enemy is removed before it can
-counterattack. Gold equals its effective defence in the phase of defeat.
+7. Build and verification
 
-6. Decisions for ambiguous or unspecified rules
+assignment2_final.pro opens as a qmake project in Qt Creator. CMakeLists.txt
+provides an alternative build and a separate basic_tests console target. Tests
+link the same core as the GUI. CMake AUTOMOC and qmake process Q_OBJECT for the
+named slots. Only standard C++ and Qt libraries are application dependencies.
 
-The formal race table takes precedence over the inconsistent example values.
-Health at or below zero means defeat. East uses e, while exit accepts x or the
-full word exit, because both words otherwise have the same initial.
-
-Adjusted damage is clamped at zero. Orc daytime successful-defence damage uses
-integer division by four, rounded down. Defence healing has no upper health
-cap because the specification defines no maximum. Equipment health modifiers
-change current health immediately; removing a life ring or acquiring a strength
-ring can therefore cause defeat. Dropping a strength ring is refused if the
-remaining inventory would exceed the resulting carrying capacity.
-
-A square cannot simultaneously contain an enemy and an item; dropping onto
-an enemy square is refused to preserve the environment's exclusive-content
-rule. A cancelled drop is still a submitted command and advances time.
-
-The selectable board range is 1-100 in each dimension as a practical allocation
-guard. Storage remains dynamically allocated and supports rectangular shapes.
-This is an implementation limit, not a fixed board size specified by the PDF.
-The start is empty. Other squares are independently assigned 35% enemy, 35%
-item and 30% empty probability. Some enemies carry one randomly chosen item.
-Enemy equipment disappears on defeat; its defence modifier still affects gold.
-
-There is no autonomous enemy AI. Movement away from enemies is allowed.
-Zero-damage matchups or defence healing can cause a stalemate; the player can
-move away. No automatic win is triggered when all enemies have been defeated.
-
-7. Build and validation boundary
-
-CMake builds game_core as a standard C++ static library and FantasyGame as a
-Qt Widgets application. A qmake project is also supplied. Tests link the same
-core rather than maintaining a separate rules implementation. Qt Test, when
-available, additionally checks interaction through the public GUI controls.
-
-The source uses only standard C++ and Qt libraries. Build and test results are
-recorded in VALIDATION.txt. macOS compilation is not evidence of Windows
-compilation: the required Windows Qt Creator build must still be checked on
-a Windows desktop kit. No Windows test result is claimed in this report.
+Basic test coverage, actual results and platform limitations are documented in
+BASIC_TESTS.md and VALIDATION.txt. Windows Qt Creator compilation is required
+by the assignment but has not been verified in this macOS environment. No claim
+of full Windows platform validation is made.

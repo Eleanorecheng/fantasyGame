@@ -1,40 +1,77 @@
-/** @file races.h @brief Races declarations. */
-#ifndef FANTASY_RACES_H
-#define FANTASY_RACES_H
+/** @file races.h @brief Five concrete character types and their creation helper. */
+#ifndef ASSIGNMENT2_RACES_H
+#define ASSIGNMENT2_RACES_H
 #include "character.h"
 #include <memory>
-/** @brief Human and dwarf defenders block all successful defences. */
-class BlockingCharacter final : public Character {
+
+/** @brief A Human character with its own successful-defence rule. */
+class Human : public Character {
   public:
-    /** @brief Construct blocker. @param race Human or dwarf race. */
-    explicit BlockingCharacter(Race race);
-    /** @copydoc Character::defendedDamage */
+    /** @brief Create a Human with no equipment or accumulated damage. */
+    Human();
+    /** @brief Calculate damage after successful defence.
+     * @param adjusted Attack minus defence, clamped at zero.
+     * @param night True during night. @param random Random-number generator.
+     * @return Signed damage; negative one means healing one health.
+     */
     int defendedDamage(int adjusted, bool night, std::mt19937& random) const override;
 };
-/** @brief Elf defenders heal on successful defence. */
-class ElfCharacter final : public Character {
+
+/** @brief A Elf character with its own successful-defence rule. */
+class Elf : public Character {
   public:
-    /** @brief Construct elf. */
-    ElfCharacter();
-    /** @copydoc Character::defendedDamage */
+    /** @brief Create a Elf with no equipment or accumulated damage. */
+    Elf();
+    /** @brief Calculate damage after successful defence.
+     * @param adjusted Attack minus defence, clamped at zero.
+     * @param night True during night. @param random Random-number generator.
+     * @return Signed damage; negative one means healing one health.
+     */
     int defendedDamage(int adjusted, bool night, std::mt19937& random) const override;
 };
-/** @brief Hobbit defenders take random damage from zero through five. */
-class HobbitCharacter final : public Character {
+
+/** @brief A Dwarf character with its own successful-defence rule. */
+class Dwarf : public Character {
   public:
-    /** @brief Construct hobbit. */
-    HobbitCharacter();
-    /** @copydoc Character::defendedDamage */
+    /** @brief Create a Dwarf with no equipment or accumulated damage. */
+    Dwarf();
+    /** @brief Calculate damage after successful defence.
+     * @param adjusted Attack minus defence, clamped at zero.
+     * @param night True during night. @param random Random-number generator.
+     * @return Signed damage; negative one means healing one health.
+     */
     int defendedDamage(int adjusted, bool night, std::mt19937& random) const override;
 };
-/** @brief Orc defenders change abilities with time of day. */
-class OrcCharacter final : public Character {
+
+/** @brief A Hobbit character with its own successful-defence rule. */
+class Hobbit : public Character {
   public:
-    /** @brief Construct orc. */
-    OrcCharacter();
-    /** @copydoc Character::defendedDamage */
+    /** @brief Create a Hobbit with no equipment or accumulated damage. */
+    Hobbit();
+    /** @brief Calculate damage after successful defence.
+     * @param adjusted Attack minus defence, clamped at zero.
+     * @param night True during night. @param random Random-number generator.
+     * @return Signed damage; negative one means healing one health.
+     */
     int defendedDamage(int adjusted, bool night, std::mt19937& random) const override;
 };
-/** @brief Construct a polymorphic character. @param race Desired race. @return Owned character. */
+
+/** @brief A Orc character with its own successful-defence rule. */
+class Orc : public Character {
+  public:
+    /** @brief Create a Orc with no equipment or accumulated damage. */
+    Orc();
+    /** @brief Calculate damage after successful defence.
+     * @param adjusted Attack minus defence, clamped at zero.
+     * @param night True during night. @param random Random-number generator.
+     * @return Signed damage; negative one means healing one health.
+     */
+    int defendedDamage(int adjusted, bool night, std::mt19937& random) const override;
+};
+
+/** @brief Build one of the five concrete characters.
+ * @param race Selected race. @return Exclusive ownership of the new character.
+ * @throws std::invalid_argument Invalid race.
+ */
 std::unique_ptr<Character> makeCharacter(Race race);
 #endif

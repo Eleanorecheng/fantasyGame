@@ -18,11 +18,10 @@ Character::Character(Race race) : race_(race)
  */
 Stats Character::stats(bool night) const
 {
-    static const Stats base[] = {{30, 20, 60, 100, 2.0 / 3, 0.5},
-                                 {40, 10, 40, 70, 1.0, 0.25},
-                                 {30, 20, 50, 130, 2.0 / 3, 2.0 / 3},
-                                 {25, 20, 70, 85, 1.0 / 3, 2.0 / 3},
-                                 {25, 10, 50, 130, 0.25, 0.25}};
+    static const Stats base[] = {
+        Stats(30, 20, 60, 100, 2.0 / 3, 0.5), Stats(40, 10, 40, 70, 1.0, 0.25),
+        Stats(30, 20, 50, 130, 2.0 / 3, 2.0 / 3), Stats(25, 20, 70, 85, 1.0 / 3, 2.0 / 3),
+        Stats(25, 10, 50, 130, 0.25, 0.25)};
     Stats s = base[static_cast<int>(race_)];
     if (race_ == Race::Orc && night) {
         s.attack = 45;
@@ -30,7 +29,7 @@ Stats Character::stats(bool night) const
         s.attackChance = 1.0;
         s.defenceChance = 0.5;
     }
-    for (const auto& item : items_) {
+    for (const Item& item : items_) {
         s.attack += item.attack;
         s.defence += item.defence;
         s.health += item.health;
@@ -46,7 +45,7 @@ Stats Character::stats(bool night) const
 int Character::weight() const
 {
     int result = 0;
-    for (const auto& item : items_) {
+    for (const Item& item : items_) {
         result += item.weight;
     }
     return result;
@@ -77,7 +76,7 @@ void Character::damage(int amount)
      */
 bool Character::pick(const Item& item, std::string& reason)
 {
-    for (const auto& carried : items_) {
+    for (const Item& carried : items_) {
         if (item.category != Category::Ring && carried.category == item.category) {
             reason = "Already carrying an item in this category.";
             return false;

@@ -3,7 +3,25 @@
 #define FANTASY_STATS_H
 
 /** @brief Effective attributes and success probabilities. */
-struct Stats {
+class Stats {
+  public:
+    /** @brief Create a collection of effective attribute values.
+     * @param attackValue Attack. @param defenceValue Defence. @param healthValue Health.
+     * @param strengthValue Capacity. @param hitChance Attack probability.
+     * @param blockChance Defence probability.
+     * Pseudocode: COPY each supplied value into the corresponding attribute.
+     */
+    Stats(int attackValue, int defenceValue, int healthValue, int strengthValue, double hitChance,
+          double blockChance)
+    {
+        attack = attackValue;
+        defence = defenceValue;
+        health = healthValue;
+        strength = strengthValue;
+        attackChance = hitChance;
+        defenceChance = blockChance;
+    }
+
     int attack;           ///< Effective attack force.
     int defence;          ///< Effective defence value.
     int health;           ///< Current health after equipment and accumulated damage.
