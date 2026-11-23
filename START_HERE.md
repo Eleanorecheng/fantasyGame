@@ -2,6 +2,15 @@
 
 這版沿用這學期已教過的 class、constructor、繼承、virtual、vector、unique_ptr、if/switch、迴圈、亂數與 Qt signals/slots。不宣告 struct，也沒有應用程式 lambda。
 
+## 開啟專案：只使用 CMake
+
+1. 在 Qt Creator 選 File → Open File or Project。
+2. 開啟根目錄的 `CMakeLists.txt`。
+3. 選安裝好的 Desktop Qt kit，按 Configure Project。
+4. 按 Build，執行目標選 `assignment2_final`，再按 Run。
+
+你只需要記住這個入口。CMake 負責告訴工具要編譯哪些檔案、連結哪些 Qt 函式庫；Qt Creator 是編輯、建置與操作它的介面。`game_core` 是程式庫，`basic_tests` 是測試，執行遊戲請選 `assignment2_final`。
+
 ## 1. 先認識三層
 
 ```text

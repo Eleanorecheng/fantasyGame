@@ -4,7 +4,6 @@ Date: 2026-11-23, Europe/Dublin
 Passed in this session
   macOS arm64, AppleClang 21, Qt 6.11.2.
   - CMake Debug build: application, game_core and basic_tests.
-  - qmake build using assignment2_final.pro, including Q_OBJECT/moc processing.
   - No compiler warnings observed with enabled warning flags.
   - CTest basic_rules passed. Race tables, equipment, inventory growth,
     carrying limits, board boundaries, commands, time and terminal state checked.
@@ -40,3 +39,8 @@ Doxygen-style comments and pseudocode are present in source. HTML documentation
 is not a delivered dependency and no successful generator run is claimed for
 this edition. No generated docs, binaries, Qt Creator user settings or build
 folders are included in the ZIP.
+
+CMake-only project update (2026-11-23)
+  CMakeLists.txt is the sole project entry point. It enables AUTOMOC for Window.
+  Rebuilt the repository using CMake and reran basic_rules successfully.
+  Game source and test logic were not changed by this documentation/build-file cleanup.

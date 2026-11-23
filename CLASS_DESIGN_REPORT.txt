@@ -112,9 +112,9 @@ automatic victory is added when enemies are exhausted.
 
 7. Build and verification
 
-assignment2_final.pro opens as a qmake project in Qt Creator. CMakeLists.txt
-provides an alternative build and a separate basic_tests console target. Tests
-link the same core as the GUI. CMake AUTOMOC and qmake process Q_OBJECT for the
+CMakeLists.txt is the single project entry point in Qt Creator. It builds the
+assignment2_final application, game_core library and basic_tests console target.
+Tests link the same core as the GUI. CMake AUTOMOC processes Q_OBJECT for the
 named slots. Only standard C++ and Qt libraries are application dependencies.
 
 Basic test coverage, actual results and platform limitations are documented in

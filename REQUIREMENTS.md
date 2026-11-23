@@ -13,8 +13,8 @@
 | C++ Qt Widgets，非純主控台 | Window : QWidget、Q_OBJECT、具名 slots、控制項與訊息區 |
 | Doxygen 註解、非簡單函式的偽代碼 | .h/.cpp 的檔頭、類別、方法與 Pseudocode 註解 |
 | K&R 格式、適當分檔、避免全域遊戲變數 | src 模組與 .clang-format；資料由物件擁有 |
-| 只用 standard C++ / Qt | CMakeLists.txt、assignment2_final.pro；無第三方執行期依賴 |
-| Qt Creator 專案與根目錄設計報告 | assignment2_final.pro、CMakeLists.txt、CLASS_DESIGN_REPORT.txt |
+| 只用 standard C++ / Qt | CMakeLists.txt；無第三方執行期依賴 |
+| Qt Creator 專案與根目錄設計報告 | CMakeLists.txt、CLASS_DESIGN_REPORT.txt |
 | Windows Qt Creator 可編譯 | 已準備跨平台專案，但仍須 Windows 實際編譯，尚未驗證 |
 
 正式種族表優先於相互矛盾的範例。首字母衝突、傷害下限、戒指移除、格子內容互斥等邊界規則列於 README 和報告。

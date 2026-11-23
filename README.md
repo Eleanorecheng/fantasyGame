@@ -10,13 +10,20 @@ Start with [START_HERE.md](START_HERE.md), the Chinese architecture and code-rea
 
 ## Build in Qt Creator
 
-1. Open `assignment2_final.pro` with Qt Creator for the qmake project.
-2. Select the installed Desktop Qt kit for your operating system.
-3. Build and run `assignment2_final`.
+1. In Qt Creator, choose **File > Open File or Project** and open [`CMakeLists.txt`](CMakeLists.txt).
+2. Select an installed **Desktop Qt kit** for your operating system.
+3. Click **Configure Project**, then **Build**.
+4. Select **assignment2_final** as the run target and press **Run**.
 
-Alternatively, open `CMakeLists.txt`, configure a Desktop Qt kit and run the `assignment2_final` target. `game_core` is the library, and `basic_tests` is a separate console test program. Use separate build directories for qmake and CMake.
+CMake is the only build system in this repository. `CMakeLists.txt` lists the source files, Qt libraries and targets. Qt Creator runs CMake for you; command-line commands are optional.
 
-C++17 and Qt Widgets are required. No other runtime libraries are used. The named slots use `Q_OBJECT`: qmake generates the required moc code automatically; CMake enables AUTOMOC on the application target.
+| Target | Purpose |
+| --- | --- |
+| `assignment2_final` | The game application to run |
+| `game_core` | The C++ game library used by the application and tests |
+| `basic_tests` | A separate console program that checks game rules |
+
+C++17 and Qt Widgets are required. No other runtime libraries are used. CMake's `AUTOMOC` setting processes `Q_OBJECT` for the named Qt slots automatically.
 
 ## Command-line build and tests
 
