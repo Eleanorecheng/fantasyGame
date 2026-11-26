@@ -86,4 +86,4 @@ A diamond is drawn at the owning end. A square contains an enemy, an item or nei
 
 Private helper methods and named slots are included so the command path can be followed. Member tables distinguish public and private API. Individual class pages include inheritance/collaboration diagrams where applicable.
 
-Gameplay rules and platform validation are described in README.md, CLASS_DESIGN_REPORT.txt and VALIDATION.txt in the project root. Windows Qt Creator compilation remains unverified.
+Gameplay rules and platform validation are described in README.md and CLASS_DESIGN_REPORT.txt in the project root. Windows Qt Creator compilation remains unverified.

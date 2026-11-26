@@ -112,12 +112,9 @@ automatic victory is added when enemies are exhausted.
 
 7. Build and verification
 
-CMakeLists.txt is the single project entry point in Qt Creator. It builds the
-assignment2_final application, game_core library and basic_tests console target.
-Tests link the same core as the GUI. CMake AUTOMOC processes Q_OBJECT for the
-named slots. Only standard C++ and Qt libraries are application dependencies.
+Open CMakeLists.txt in Qt Creator to build the assignment2_final application
+and game_core library. CMake AUTOMOC processes Q_OBJECT for the named slots.
+Only standard C++ and Qt libraries are application dependencies.
 
-Basic test coverage, actual results and platform limitations are documented in
-BASIC_TESTS.md and VALIDATION.txt. Windows Qt Creator compilation is required
-by the assignment but has not been verified in this macOS environment. No claim
-of full Windows platform validation is made.
+The application has been built on macOS. Windows Qt Creator compilation is
+required by the assignment and remains unverified.
