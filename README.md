@@ -180,11 +180,10 @@ Download [assignment2_final-doxygen.zip](docs/assignment2_final-doxygen.zip), ex
 
 ## Minimal submission package
 
-Use [assignment2_final_submission.zip](submission/assignment2_final_submission.zip) for the separate, minimal assignment package. Its single `assignment2_final/` folder contains:
+Download [assignment2_final_submission.zip](submission/assignment2_final_submission.zip). This package contains only the three categories requested: C++ headers, C++ sources, and Doxygen documentation.
 
-- `CMakeLists.txt`: application and core library only.
-- `src/`: the 17 C++ source/header files, including Doxygen comments and pseudocode.
-- `CLASS_DESIGN_REPORT.txt`: class design report in the project root.
-- `README.txt`: short build and gameplay instructions.
+- `src/`: 9 header files and 8 source files, retaining Doxygen comments and pseudocode.
+- `doxygen/html/index.html`: generated API documentation; extract the entire ZIP before opening this page. Supporting styles, scripts and diagrams are included.
+- `Doxyfile` and `doxygen/doxygen-main.md`: Doxygen configuration and overview. To regenerate, run `doxygen Doxyfile` from the extracted `assignment2_final/` folder with Doxygen and Graphviz installed.
 
-The ZIP contains no tests, tutorials, screenshots, generated HTML, build outputs or local Qt Creator settings. Development tests and learning documents remain in the repository. The package is independently built from an extracted copy before upload. Windows Qt Creator compilation remains unverified and must still be checked before submission.
+Tests, tutorials, screenshots, build outputs, CMake configuration and the standalone class-design report are excluded from this requested package. The full buildable CMake project and class-design report remain in this repository. The assignment PDF requires a Qt Creator project and a root-level design report, so this three-category package alone does not include every PDF submission deliverable. Windows Qt Creator compilation remains unverified.
