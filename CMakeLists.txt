@@ -25,21 +25,24 @@ add_executable(assignment2_final WIN32 MACOSX_BUNDLE
 set_target_properties(assignment2_final PROPERTIES AUTOMOC ON)
 target_link_libraries(assignment2_final PRIVATE game_core Qt${QT_VERSION_MAJOR}::Widgets)
 
+# A separate console program checks the core rules.
+include(CTest)
+if(BUILD_TESTING)
+    add_executable(basic_tests tests/basic_tests.cpp)
+    target_link_libraries(basic_tests PRIVATE game_core)
+    add_test(NAME basic_rules COMMAND basic_tests)
+endif()
+
 if(MSVC)
     target_compile_options(game_core PRIVATE /W4 /permissive-)
     target_compile_options(assignment2_final PRIVATE /W4 /permissive-)
+    if(BUILD_TESTING)
+        target_compile_options(basic_tests PRIVATE /W4 /permissive-)
+    endif()
 else()
     target_compile_options(game_core PRIVATE -Wall -Wextra -Wpedantic)
     target_compile_options(assignment2_final PRIVATE -Wall -Wextra -Wpedantic)
-endif()
-
-# Optional API documentation. Neither tool is needed to build the game.
-find_package(Doxygen QUIET OPTIONAL_COMPONENTS dot)
-if(TARGET Doxygen::doxygen AND TARGET Doxygen::dot)
-    add_custom_target(documentation
-        COMMAND "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        COMMENT "Generating Doxygen HTML and class diagrams"
-        VERBATIM
-    )
+    if(BUILD_TESTING)
+        target_compile_options(basic_tests PRIVATE -Wall -Wextra -Wpedantic)
+    endif()
 endif()

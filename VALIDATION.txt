@@ -1,0 +1,42 @@
+assignment2_final - Validation record
+Date: 2026-11-23, Europe/Dublin
+
+Passed in this session
+  macOS arm64, AppleClang 21, Qt 6.11.2.
+  - CMake Debug build: application, game_core and basic_tests.
+  - qmake build using assignment2_final.pro, including Q_OBJECT/moc processing.
+  - No compiler warnings observed with enabled warning flags.
+  - CTest basic_rules passed. Race tables, equipment, inventory growth,
+    carrying limits, board boundaries, commands, time and terminal state checked.
+  - Fixed-seed gameplay: 1,240 combat rounds and 32 defeated enemies; enemy
+    counterattack and effective-defence gold reward checked.
+  - External development-only Qt offscreen harness passed setup, New game,
+    Send, Enter, command buttons, day/night Orc attributes, pickup,
+    Drop item chooser, and exit result dialog. Item chooser exercised.
+  - GUI screenshot inspected for the basic interface.
+  - Application source has no struct declarations or lambda captures.
+  - clang-format dry-run passed using the supplied K&R-style configuration.
+
+How to reproduce delivered basic tests
+  cmake -S . -B build -DCMAKE_PREFIX_PATH=<Qt-kit-path>
+  cmake --build build
+  ctest --test-dir build --output-on-failure
+
+  basic_tests uses only standard C++ and the same core as the application.
+  The additional Qt GUI harness is kept outside the assignment source;
+  BASIC_TESTS.md gives manual steps for the same interaction paths.
+
+Not verified
+  - Windows Qt Creator / MSVC / MinGW build and run. This is a mandatory
+    assignment condition still requiring access to a Windows environment.
+  - Native desktop interaction on macOS; automated GUI checks used offscreen.
+  - Qt 5 build; APIs and build descriptions allow it, but only Qt 6.11.2 tested.
+  - Instructor interpretation of documented rule ambiguities and board-size guard.
+
+Qt offscreen emitted font-alias and propagateSizeHints runtime diagnostics;
+these are not C++ compiler warnings.
+
+Doxygen-style comments and pseudocode are present in source. HTML documentation
+is not a delivered dependency and no successful generator run is claimed for
+this edition. No generated docs, binaries, Qt Creator user settings or build
+folders are included in the ZIP.

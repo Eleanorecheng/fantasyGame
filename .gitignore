@@ -4,8 +4,9 @@ build*/
 .DS_Store
 docs-generated/
 
-# Generated build files
+# qmake outputs when building in the source directory
 Makefile*
+.qmake.stash
 *.o
 *.obj
 *.exe
