@@ -46,3 +46,14 @@ else()
         target_compile_options(basic_tests PRIVATE -Wall -Wextra -Wpedantic)
     endif()
 endif()
+
+# Optional API documentation. Neither tool is needed to build the game.
+find_package(Doxygen QUIET OPTIONAL_COMPONENTS dot)
+if(TARGET Doxygen::doxygen AND TARGET Doxygen::dot)
+    add_custom_target(documentation
+        COMMAND "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "Generating Doxygen HTML and class diagrams"
+        VERBATIM
+    )
+endif()

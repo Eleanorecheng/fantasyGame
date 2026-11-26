@@ -149,3 +149,42 @@ Attack button
 ```
 
 `movePlayer()`, `pickUpItem()`, `dropItem()` and `attackEnemy()` each handle one action. Named Qt slots make each button's call path explicit. [START_HERE.md](START_HERE.md) explains startup, ownership, the reading order and the callers/results of the main functions in Chinese.
+
+
+## Doxygen API documentation
+
+The generated local documentation opens at `docs-generated/html/index.html`.
+It includes a project overview, ownership and inheritance diagrams, class APIs,
+private action helpers, named Qt slots, and the application entry point.
+
+To regenerate, install **Doxygen** and **Graphviz** (the `dot` tool), then run:
+
+```sh
+doxygen Doxyfile
+```
+
+Or configure the CMake project after installing those tools and use:
+
+```sh
+cmake --build build --target documentation
+```
+
+Qt Creator can also build the optional `documentation` target. Doxygen and
+Graphviz are documentation tools; they are not required to compile or run the game.
+Generated HTML is kept in `docs-generated/`, which is ignored by Git.
+
+
+## Download generated documentation
+
+Download [assignment2_final-doxygen.zip](docs/assignment2_final-doxygen.zip), extract it and open `index.html` in a browser. The archive includes the generated HTML, scripts, styles and diagrams for offline viewing. Raw generated files remain ignored by Git; the Doxyfile and documentation overview are tracked for regeneration.
+
+## Minimal submission package
+
+Use [assignment2_final_submission.zip](submission/assignment2_final_submission.zip) for the separate, minimal assignment package. Its single `assignment2_final/` folder contains:
+
+- `CMakeLists.txt`: application and core library only.
+- `src/`: the 17 C++ source/header files, including Doxygen comments and pseudocode.
+- `CLASS_DESIGN_REPORT.txt`: class design report in the project root.
+- `README.txt`: short build and gameplay instructions.
+
+The ZIP contains no tests, tutorials, screenshots, generated HTML, build outputs or local Qt Creator settings. Development tests and learning documents remain in the repository. The package is independently built from an extracted copy before upload. Windows Qt Creator compilation remains unverified and must still be checked before submission.

@@ -182,3 +182,10 @@ Attack clicked → onAttackClicked → submit("a")
 最後用斷點追 Attack，確認成功防禦時實際進入哪個種族的方法。
 
 老師要求的 Windows Qt Creator 編譯仍需在 Windows 實際驗證。課堂主題已足夠進行這版實作；若要更貼近老師的命名與格式，可以之後提供課堂範例作比較。
+
+
+## 查看 Doxygen 文件
+
+開啟 `docs-generated/html/index.html`。首頁有物件所有權圖、角色繼承圖與 Attack 流程表；Classes 可以進入類別，Files 可以看各標頭檔和 main.cpp。private 操作函式與具名 slots 也包含在內。
+
+修改註解後，從專案根目錄執行 `doxygen Doxyfile`；或安裝 Doxygen 和 Graphviz 後重新配置 CMake，再建置 `documentation` target。產生器主要讀取 .h 的 API 註解，完整實作與偽代碼仍可搭配 .cpp 閱讀。

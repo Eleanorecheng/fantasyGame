@@ -35,12 +35,21 @@ Not verified
 Qt offscreen emitted font-alias and propagateSizeHints runtime diagnostics;
 these are not C++ compiler warnings.
 
-Doxygen-style comments and pseudocode are present in source. HTML documentation
-is not a delivered dependency and no successful generator run is claimed for
-this edition. No generated docs, binaries, Qt Creator user settings or build
-folders are included in the ZIP.
+Doxygen-style comments and pseudocode are present in source. Optional generated
+HTML documentation is now included; no binaries, Qt Creator user settings or
+build folders are included in the ZIP.
 
 CMake-only project update (2026-11-23)
   CMakeLists.txt is the sole project entry point. It enables AUTOMOC for Window.
   Rebuilt the repository using CMake and reran basic_rules successfully.
   Game source and test logic were not changed by this documentation/build-file cleanup.
+
+Doxygen documentation update (2026-11-26)
+  Generated with Doxygen 1.18.0 and Graphviz. Doxyfile uses single-worker
+  generation, reads header APIs plus main.cpp, and includes private helpers.
+  HTML entry point: docs-generated/html/index.html.
+  Includes project overview, ownership and inheritance diagrams, class APIs
+  and source views for the parsed files. Complete implementation pseudocode
+  remains in the .cpp files.
+  Warning-as-error generation passed with an empty warning log.
+  Optional CMake documentation target added; game logic was not changed.
